@@ -1,6 +1,6 @@
 {
     "name": "lg-zoom-codenames",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "This was developed for the game session for my LG.",
     "main": "dist/js/main.js",
     "scripts": {
