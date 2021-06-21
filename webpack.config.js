@@ -55,7 +55,6 @@ module.exports = (_, argv) => {
                             options: {
                                 postcssOptions: {
                                     plugins: [
-                                        require('autoprefixer'),
                                         require('tailwindcss'),
                                     ],
                                 },
