@@ -75,7 +75,7 @@ export default function () {
         <div className="flex flex-shrink-0 justify-between h-7 w-full bg-gray-800 text-gray-500 select-none">
             <div className="flex ml-4 space-x-2 text-xs">
                 <div className="flex items-center px-2 font-bold text-xs">
-                    LG Zoom Codenames
+                    Screen Share Codenames
                 </div>
                 <a
                     className="cursor-pointer flex items-center px-2 transition-colors duration-75 hover:bg-gray-700 hover:text-gray-400"

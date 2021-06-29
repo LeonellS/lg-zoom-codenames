@@ -1,7 +1,7 @@
 {
-    "name": "lg-zoom-codenames",
-    "version": "1.0.1",
-    "description": "This was developed for the game session for my LG.",
+    "name": "screen-share-codenames",
+    "version": "1.0.2",
+    "description": "A screen shareable Codenames.",
     "main": "dist/js/main.js",
     "scripts": {
         "start": "electron-forge start",
