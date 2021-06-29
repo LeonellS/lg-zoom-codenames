@@ -1,13 +1,16 @@
-# LG Zoom Codenames
+# Screen Share Codenames
 
-This was developed for the game session for my LG.
-
-## Goal
-
-The goal of this was to be screen-shareable application of Codenames so others could participate in the game without having to leave Zoom.
-
-While this may not be much of an issue for those using Zoom on their computers, it may be an issue for those on mobile.
+A screen shareable Codenames that can be played from within the boundaries of a video conferencing app.
 
 ## Building
 
-🚧 *TODO* 🚧
+First, run webpack.
+
+**Development**    
+`npm run development` or `npm run dev`
+
+**Production**   
+`npm run production` or `npm run prod`
+
+Then, build the electron app.
+`npm run make`
