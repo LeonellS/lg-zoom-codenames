@@ -1,40 +1,53 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { Team } from './game'
 import pickRandom from 'pick-random'
-import { difference, first } from 'lodash'
 import words from '../words.json'
-import { StartingTeam } from './game'
+import { createNotification } from './notification'
+import { RootState } from './store'
 
 const MAX_CARDS = 25
 const MAX_STARTING_TEAM_CARDS = 9
 const MAX_OTHER_TEAM_CARDS = 8
 const MAX_ASSASSIN_CARDS = 1
 
-export enum CardType {
+let counter = 0
+
+enum CardType {
     RED,
     BLUE,
-    ASSASSIN,
     BYSTANDER,
+    ASSASSIN,
 }
 
 interface Card {
+    id: number
     type: CardType
     turned: boolean
     word: string
 }
 
-interface BoardState {
+interface State {
     cards: Card[]
 }
 
-const initialState: BoardState = {
+const initialState: State = {
     cards: [],
 }
+
+const revealAllWords = createAsyncThunk<
+    Promise<void>,
+    undefined,
+    { state: RootState }
+>('board/revealAllWords', async (_, { dispatch }): Promise<void> => {
+    dispatch(turnAllCards())
+    dispatch(createNotification('Revealed all words'))
+})
 
 const slice = createSlice({
     name: 'board',
     initialState,
     reducers: {
-        newBoard(state, action: PayloadAction<StartingTeam>) {
+        newBoard(state, { payload }: PayloadAction<Team>) {
             const allWords = pickRandom(words, { count: MAX_CARDS })
 
             const startingTeamWords = pickRandom(allWords, {
@@ -42,46 +55,52 @@ const slice = createSlice({
             })
 
             const otherTeamWords = pickRandom(
-                difference(allWords, startingTeamWords),
-                { count: MAX_OTHER_TEAM_CARDS }
+                allWords.filter((word) => !startingTeamWords.includes(word)),
+                {
+                    count: MAX_OTHER_TEAM_CARDS,
+                }
             )
 
-            const assassinWord = first(
-                pickRandom(
-                    difference(allWords, startingTeamWords, otherTeamWords),
-                    { count: MAX_ASSASSIN_CARDS }
-                )
+            const assassinWord = pickRandom(
+                allWords.filter(
+                    (word) =>
+                        !(
+                            startingTeamWords.includes(word) ||
+                            otherTeamWords.includes(word)
+                        )
+                ),
+                { count: MAX_ASSASSIN_CARDS }
             )
 
-            const cards = allWords.map((word) => {
+            state.cards = allWords.map((word) => {
+                const [startingTeamCardType, otherTeamCardType] =
+                    payload === Team.RED
+                        ? [CardType.RED, CardType.BLUE]
+                        : [CardType.BLUE, CardType.RED]
+
                 let type = CardType.BYSTANDER
 
-                if (startingTeamWords.includes(word))
-                    type =
-                        action.payload === StartingTeam.RED
-                            ? CardType.RED
-                            : CardType.BLUE
-                else if (otherTeamWords.includes(word))
-                    type =
-                        action.payload === StartingTeam.RED
-                            ? CardType.BLUE
-                            : CardType.RED
-                else if (word === assassinWord) type = CardType.ASSASSIN
+                if (startingTeamWords.includes(word)) {
+                    type = startingTeamCardType
+                } else if (otherTeamWords.includes(word)) {
+                    type = otherTeamCardType
+                } else if (assassinWord.includes(word)) {
+                    type = CardType.ASSASSIN
+                }
 
                 return {
-                    type,
+                    id: counter++,
                     turned: false,
+                    type,
                     word,
                 }
             })
-
-            state.cards = cards
         },
 
-        turnCard(state, action: PayloadAction<number>) {
-            const card = state.cards[action.payload]
+        turnCard(state, { payload }: PayloadAction<number>) {
+            const card = state.cards.find(({ id }) => id === payload)
 
-            if (card) card.turned = true
+            if (card !== undefined) card.turned = true
         },
 
         turnAllCards(state) {
@@ -92,5 +111,6 @@ const slice = createSlice({
     },
 })
 
+export { CardType, revealAllWords }
 export const { newBoard, turnCard, turnAllCards } = slice.actions
 export default slice.reducer

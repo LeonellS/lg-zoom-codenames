@@ -1,89 +1,105 @@
-module.exports = (_, argv) => {
-    const path = require('path')
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-    /**
-     * Plugins.
-     */
-    const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-    const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-    const CssMinimizerWebpackPlugin = require('css-minimizer-webpack-plugin')
-    const TerserWebpackPlugin = require('terser-webpack-plugin')
-    const HtmlWebpackPlugin = require('html-webpack-plugin')
+import { CleanWebpackPlugin } from 'clean-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import CopyWebpackPlugin from 'copy-webpack-plugin'
 
-    /**
-     * Current webpack mode.
-     */
-    const devMode = argv.mode === 'development'
+import autoprefixer from 'autoprefixer'
+import PurgeCSS from '@fullhuman/postcss-purgecss'
 
-    return {
-        target: 'electron-main',
-        entry: {
-            main: ['./src/ts/main.ts'],
-            index: ['./src/ts/index.tsx', './src/scss/index.scss'],
-        },
-        plugins: [
-            new CleanWebpackPlugin(),
-            new MiniCssExtractPlugin({
-                filename: 'css/index.css',
-            }),
-            new HtmlWebpackPlugin({
-                template: './src/html/index.html',
-                inject: 'body',
-                chunks: ['index'],
-                publicPath: '.',
-            }),
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+const isProduction = process.env.NODE_ENV === 'production'
+
+const postCssPlugins = [autoprefixer]
+
+const postCssProductionPlugins = [
+    ...postCssPlugins,
+    PurgeCSS({
+        content: ['./dist/*.html', './dist/js/*.js'],
+        safelist: [/notification/, /card/],
+    }),
+]
+
+const config = {
+    context: resolve(__dirname, 'src'),
+    entry: {
+        index: ['./ts/index.tsx', './scss/index.scss'],
+    },
+    plugins: [
+        new CleanWebpackPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'css/[name].css',
+        }),
+        new HtmlWebpackPlugin({
+            template: './html/index.html',
+            inject: 'body',
+            chunks: ['index'],
+            publicPath: '.',
+        }),
+        new CopyWebpackPlugin({
+            patterns: [{ from: 'asset', to: 'asset' }],
+        }),
+    ],
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/i,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+            {
+                test: /\.scss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            importLoaders: 1,
+                        },
+                    },
+                    {
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: isProduction
+                                    ? postCssProductionPlugins
+                                    : postCssPlugins,
+                            },
+                        },
+                    },
+                    'resolve-url-loader',
+                    'sass-loader',
+                ],
+            },
         ],
-        module: {
-            rules: [
-                {
-                    test: /\.tsx?$/i,
-                    use: 'ts-loader',
-                    exclude: /node_modules/,
+    },
+    resolve: {
+        extensions: ['.js', '.ts', '.tsx', '.scss'],
+    },
+    output: {
+        path: resolve(__dirname, 'dist'),
+        filename: 'js/[name].js',
+        publicPath: '/',
+    },
+    optimization: {
+        minimizer: [`...`, new CssMinimizerPlugin()],
+        moduleIds: 'hashed',
+        runtimeChunk: 'single',
+        splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
                 },
-                {
-                    test: /\.scss$/i,
-                    use: [
-                        MiniCssExtractPlugin.loader,
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                importLoaders: 1,
-                            },
-                        },
-                        {
-                            loader: 'postcss-loader',
-                            options: {
-                                postcssOptions: {
-                                    plugins: [
-                                        require('tailwindcss'),
-                                    ],
-                                },
-                            },
-                        },
-                        'resolve-url-loader',
-                        'sass-loader',
-                    ],
-                },
-            ],
+            },
         },
-        resolve: {
-            extensions: ['.ts', '.tsx', '.js', '.scss'],
-        },
-        output: {
-            path: path.resolve(__dirname, 'dist'),
-            filename: 'js/[name].js',
-            publicPath: '/',
-        },
-        optimization: {
-            minimize: !devMode,
-            minimizer: [
-                new TerserWebpackPlugin({
-                    extractComments: 'some',
-                }),
-                new CssMinimizerWebpackPlugin(),
-            ],
-            moduleIds: 'deterministic',
-        },
-        devtool: devMode ? 'inline-source-map' : false,
-    }
+    },
 }
+
+export default config

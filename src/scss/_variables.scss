@@ -1,0 +1,38 @@
+// Colours
+$black: #0f0f0f;
+$white: #f7f7f7;
+
+$very-dark-gray: #303030;
+$light-gray: #b2b2b2;
+
+$dark-bluish-gray: #3c3a56;
+$dark-bluish-gray-1: #58566e;
+$light-bluish-gray: #bfbec7;
+
+$red: #e60000;
+
+$dark-yellow: #bd7d0f;
+$light-yellow: #ffe374;
+
+$blue: #1b75c5;
+$blue-1: #0d599e;
+
+// Shadows
+$shadow: 0 3px 4px rgba($very-dark-gray, 0.7);
+
+// Font size
+$font-size-small: 0.875rem;
+
+// Font weight
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// Border radius
+$border-radius: 0.375rem;
+$border-radius-medium: 0.75rem;
+$border-radius-large: 1rem;
+
+// Transition duration
+$transition-duration: 80ms;
+$transition-duration-reveal: 250ms;
+$transition-duration-fade-out: 1000ms;

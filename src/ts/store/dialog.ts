@@ -1,17 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-export enum DialogType {
+enum DialogType {
     NEW_GAME,
     NEW_WORD_LIST,
-    REVEAL_ALL_WORDS,
-    EXIT,
+    REVEAL_ALL_WORD,
 }
 
-interface DialogState {
+interface State {
     type: DialogType | null
 }
 
-const initialState: DialogState = {
+const initialState: State = {
     type: null,
 }
 
@@ -19,8 +18,8 @@ const slice = createSlice({
     name: 'dialog',
     initialState,
     reducers: {
-        showDialog(state, action: PayloadAction<DialogType>) {
-            state.type = action.payload
+        showDialog(state, { payload }: PayloadAction<DialogType>) {
+            state.type = payload
         },
 
         hideDialog(state) {
@@ -29,5 +28,6 @@ const slice = createSlice({
     },
 })
 
+export { DialogType }
 export const { showDialog, hideDialog } = slice.actions
 export default slice.reducer

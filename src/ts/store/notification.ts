@@ -1,17 +1,16 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-let notificationIdCounter = 0
-
+let counter = 0
 interface Notification {
     id: number
     text: string
 }
 
-interface NotificationState {
+interface State {
     notifications: Notification[]
 }
 
-const initialState: NotificationState = {
+const initialState: State = {
     notifications: [],
 }
 
@@ -19,16 +18,15 @@ const slice = createSlice({
     name: 'notification',
     initialState,
     reducers: {
-        createNotification(state, action: PayloadAction<string>) {
+        createNotification(state, { payload }: PayloadAction<string>) {
             state.notifications.push({
-                id: notificationIdCounter++,
-                text: action.payload,
+                id: counter++,
+                text: payload,
             })
         },
-
-        removeNotification(state, action: PayloadAction<number>) {
+        removeNotification(state, { payload }: PayloadAction<number>) {
             state.notifications = state.notifications.filter(
-                (notification) => notification.id !== action.payload
+                (notification) => notification.id !== payload
             )
         },
     },

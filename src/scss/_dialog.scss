@@ -1,0 +1,61 @@
+.dialog__container {
+    position: absolute;
+
+    width: 100vw;
+    height: 100vh;
+
+    z-index: 1000;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba($black, 0.4);
+
+    transition-property: visibility, opacity;
+    transition-timing-function: ease-in-out;
+    transition-duration: $transition-duration;
+}
+
+.dialog__container--hide {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.dialog__container--show {
+    visibility: visible;
+    opacity: 1;
+}
+
+.dialog {
+    width: 16rem;
+
+    background-color: $dark-bluish-gray;
+
+    border-radius: $border-radius-medium;
+
+    padding: 1rem;
+
+    box-shadow: $shadow;
+}
+
+.dialog__text {
+    margin: 0;
+
+    margin-bottom: 1.625rem;
+
+    color: $white;
+
+    font-weight: $font-weight-medium;
+}
+
+.dialog__actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    > *:not(:first-child) {
+        margin-left: 0.5rem;
+    }
+}

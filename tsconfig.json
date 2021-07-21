@@ -5,8 +5,9 @@
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true,
         "jsx": "react",
-        "lib": ["es6", "dom"],
-        "module": "CommonJS",
+        "lib": ["ES2020", "DOM"],
+        "module": "ES2020",
+        "moduleResolution": "node",
         "noEmitOnError": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
@@ -17,8 +18,8 @@
         "resolveJsonModule": true,
         "skipLibCheck": true,
         "strict": true,
-        "target": "ES2015"
+        "target": "ES2020"
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*", "test/**/*"],
     "exclude": ["node_modules", "dist", "out"]
 }
