@@ -19,7 +19,7 @@ const postCssPlugins = [autoprefixer]
 const postCssProductionPlugins = [
     ...postCssPlugins,
     PurgeCSS({
-        content: ['./dist/*.html', './dist/js/*.js'],
+        content: ['./dist/*.html', './dist/js/index.js'],
         safelist: [/notification/, /card/],
     }),
 ]
