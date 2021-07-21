@@ -1,10 +1,11 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'modern-normalize/modern-normalize.css';
 
-body {
-    @apply bg-gray-900;
-    @apply text-gray-100;
+@import 'variables';
 
-    @apply select-none;
-}
+@import 'window';
+@import 'title-bar';
+@import 'board';
+@import 'card';
+@import 'dialog';
+@import 'button';
+@import 'notification';

@@ -1,0 +1,54 @@
+.notification__container {
+    position: absolute;
+
+    width: 15rem;
+
+    bottom: 0;
+    right: 0;
+
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+
+    display: flex;
+
+    flex-direction: column-reverse;
+
+    z-index: 2000;
+
+    > * {
+        margin-top: 0.75rem;
+    }
+}
+
+.notification {
+    background-color: rgba($black, 0.9);
+    color: $white;
+
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    border-radius: $border-radius-medium;
+
+    box-shadow: $shadow;
+
+    font-size: $font-size-small;
+
+    visibility: hidden;
+    opacity: 0;
+
+    transition-property: visibility, opacity;
+    transition-timing-function: ease-in-out;
+
+    // This makes it so that the transition is longer when fading out.
+    transition-duration: $transition-duration-fade-out;
+}
+
+.notification--show {
+    visibility: visible;
+    opacity: 1;
+
+    // This make it so that the transition is faster when fading it.
+    transition-duration: $transition-duration-reveal;
+}

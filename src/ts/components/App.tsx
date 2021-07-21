@@ -1,29 +1,25 @@
-import React, { useEffect } from 'react'
-import TitleBar from './TitleBar'
-import Notification from './Notification'
+import React, { ReactElement } from 'react'
 import Board from './Board'
-import { useAppDispatch, useAppSelector } from '../hooks'
-import DialogSection from './DialogSection'
-import { createNotification } from '../store/notification'
-import { newBoard } from '../store/board'
-import { StartingTeam } from '../store/game'
+import Dialog from './Dialog'
+import FullScreenButton from './FullscreenButton'
+import Notifications from './Notification'
+import TitleBar from './TitleBar'
+import { FullScreen, useFullScreenHandle } from 'react-full-screen'
 
-export default function App() {
-    const dispatch = useAppDispatch()
-
-    const startingTeam = useAppSelector((state) => state.game.startingTeam)
-
-    useEffect(() => {
-        dispatch(newBoard(startingTeam))
-        dispatch(createNotification(`${startingTeam === StartingTeam.RED ? 'Red' : 'Blue'} team starts`))
-    })
+const App = (): ReactElement => {
+    const handle = useFullScreenHandle()
 
     return (
-        <div className="w-screen h-screen fixed flex flex-col">
-            <TitleBar />
-            <Board />
-            <DialogSection />
-            <Notification />
-        </div>
+        <FullScreen handle={handle}>
+            <main className="window">
+                <TitleBar />
+                <FullScreenButton handle={handle} />
+                <Board />
+                <Dialog />
+                <Notifications />
+            </main>
+        </FullScreen>
     )
 }
+
+export default App

@@ -1,17 +1,29 @@
-import React from 'react'
-import { useAppSelector } from '../hooks'
+import React, { ReactElement, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { newGame } from '../store/game'
+import { useAppSelector } from '../store/store'
 import Card from './Card'
 
-export default function () {
+const Board = (): ReactElement => {
+    const dispatch = useDispatch()
+
     const cards = useAppSelector((state) => state.board.cards)
 
+    useEffect(() => {
+        dispatch(newGame(false))
+    }, [dispatch])
+
     return (
-        <div className="flex flex-1 justify-center items-center">
-            <div className="grid grid-cols-5 grid-rows-5 gap-x-4 gap-y-4 container h-full p-8 text-3xl capitalize font-bold">
-                {cards.map((_: any, index: number) => (
-                    <Card key={index} id={index} />
+        <section className="board">
+            <div className="board__grid">
+                {cards.map(({ id, turned, type, word }) => (
+                    <Card key={id} id={id} turned={turned} type={type}>
+                        {word}
+                    </Card>
                 ))}
             </div>
-        </div>
+        </section>
     )
 }
+
+export default Board

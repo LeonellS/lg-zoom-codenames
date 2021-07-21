@@ -1,45 +1,45 @@
-import React from 'react'
-import { useAppDispatch, useAppSelector } from '../hooks'
+import React, { ReactElement } from 'react'
 import { CardType, turnCard } from '../store/board'
+import { useAppDispatch } from '../store/store'
 
-const UNTURNED_CARD_COLOUR_CLASSES = 'bg-yellow-200 text-yellow-700'
-
-interface CardProps {
+interface Props {
     id: number
+    turned: boolean
+    type: CardType
+    children: string
 }
 
-function getColourClasses(type: CardType): string {
+function getColourClass(type: CardType): string {
     switch (type) {
         case CardType.RED:
-            return 'bg-red-700 text-gray-100'
+            return 'red'
         case CardType.BLUE:
-            return 'bg-blue-700 text-gray-100'
+            return 'blue'
         case CardType.ASSASSIN:
-            return 'bg-gray-800 text-gray-100'
+            return 'assassin'
         case CardType.BYSTANDER:
-            return 'bg-gray-200 text-gray-700'
+        default:
+            return 'bystander'
     }
 }
 
-export default function ({ id }: CardProps) {
+const Card = ({ id, turned, type, children }: Props): ReactElement => {
     const dispatch = useAppDispatch()
 
-    const { type, turned, word } = useAppSelector(
-        (state) => state.board.cards[id]
-    )
-
-    function turn() {
+    function handleClick(): void {
         dispatch(turnCard(id))
     }
 
     return (
-        <div
-            className={`flex justify-center items-center rounded-xl cursor-pointer transition-colors duration-500 ${
-                turned ? getColourClasses(type) : UNTURNED_CARD_COLOUR_CLASSES
+        <button
+            className={`card card--${
+                turned ? getColourClass(type) : 'unturned'
             }`}
-            onClick={turn}
+            onClick={handleClick}
         >
-            {word}
-        </div>
+            {children}
+        </button>
     )
 }
+
+export default Card

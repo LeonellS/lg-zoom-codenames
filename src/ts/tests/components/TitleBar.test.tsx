@@ -1,54 +1,36 @@
-import { mount, ReactWrapper } from 'enzyme'
+import { screen } from '@testing-library/react'
 import React from 'react'
-import { Provider } from 'react-redux'
-import configureStore from 'redux-mock-store'
 import TitleBar from '../../components/TitleBar'
+import { render } from '../test-utils'
 
-const mockStore = configureStore()
+test('has new game', () => {
+    render(<TitleBar />)
 
-describe('components/TitleBar', () => {
-    let store: any
-    let wrapper: any
+    expect(screen.getByRole('button', { name: /new game/i })).toHaveTextContent(
+        'New Game'
+    )
+})
 
-    beforeEach(() => {
-        store = mockStore({})
+test('has new word list', () => {
+    render(<TitleBar />)
 
-        wrapper = mount(
-            <Provider store={store}>
-                <TitleBar />
-            </Provider>
-        )
-    })
+    expect(
+        screen.getByRole('button', { name: /new word list/i })
+    ).toHaveTextContent('New Word List')
+})
 
-    describe('menu', () => {
-        let result: string[]
+test('has copy word list', () => {
+    render(<TitleBar />)
 
-        beforeEach(() => {
-            result = wrapper.find('a').map((e: ReactWrapper) => e.text())
-        })
+    expect(
+        screen.getByRole('button', { name: /copy word list/i })
+    ).toHaveTextContent('Copy Word List')
+})
 
-        it('has new game', () => {
-            const expected = 'New Game'
+test('has reveal all words', () => {
+    render(<TitleBar />)
 
-            expect(result).toContain(expected)
-        })
-
-        it('has new word list', () => {
-            const expected = 'New Word List'
-
-            expect(result).toContain(expected)
-        })
-
-        it('has copy word list', () => {
-            const expected = 'Copy Word List'
-
-            expect(result).toContain(expected)
-        })
-
-        it('has reveal all words', () => {
-            const expected = 'Reveal All Words'
-
-            expect(result).toContain(expected)
-        })
-    })
+    expect(
+        screen.getByRole('button', { name: /reveal all words/i })
+    ).toHaveTextContent('Reveal All Words')
 })

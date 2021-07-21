@@ -1,0 +1,47 @@
+.card {
+    background: none;
+    border: none;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-radius: $border-radius-large;
+
+    font-size: max(1.5rem, 3vmin);
+    font-weight: $font-weight-bold;
+
+    cursor: pointer;
+
+    text-transform: capitalize;
+
+    transition-property: background-color, color;
+    transition-timing-function: ease-in-out;
+    transition-duration: $transition-duration-reveal;
+}
+
+.card--unturned {
+    background-color: $light-yellow;
+    color: $dark-yellow;
+}
+
+.card--red {
+    background-color: $red;
+    color: $white;
+}
+
+.card--blue {
+    background-color: $blue;
+    color: $white;
+}
+
+.card--bystander {
+    background-color: $light-gray;
+    color: $very-dark-gray;
+}
+
+.card--assassin {
+    background-color: $very-dark-gray;
+    color: $white;
+}
