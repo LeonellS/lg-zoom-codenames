@@ -5,6 +5,7 @@ import { CleanWebpackPlugin } from 'clean-webpack-plugin'
 import MiniCssExtractPlugin from 'mini-css-extract-plugin'
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import { HtmlWebpackSkipAssetsPlugin } from 'html-webpack-skip-assets-plugin'
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 
 import autoprefixer from 'autoprefixer'
@@ -26,7 +27,9 @@ const postCssProductionPlugins = [
 const config = {
     context: resolve(__dirname, 'src'),
     entry: {
-        index: ['./ts/index.tsx', './scss/index.scss'],
+        index: ['./scss/index.scss'],
+        game: ['./ts/game.tsx', './scss/game.scss'],
+        spymaster: ['./ts/spymaster.tsx', './scss/spymaster.scss'],
     },
     plugins: [
         new CleanWebpackPlugin(),
@@ -39,7 +42,23 @@ const config = {
             inject: 'body',
             chunks: ['index'],
             publicPath: '/',
+            excludeAssets: ['**/*.js'],
         }),
+        new HtmlWebpackPlugin({
+            template: './html/game.html',
+            filename: 'game.html',
+            inject: 'body',
+            chunks: ['game'],
+            publicPath: '/',
+        }),
+        new HtmlWebpackPlugin({
+            template: './html/spymaster.html',
+            filename: 'spymaster.html',
+            inject: 'body',
+            chunks: ['spymaster'],
+            publicPath: '/',
+        }),
+        new HtmlWebpackSkipAssetsPlugin(),
         new CopyWebpackPlugin({
             patterns: [{ from: 'asset', to: `public/asset` }],
         }),

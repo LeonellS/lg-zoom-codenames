@@ -26,5 +26,6 @@
             "version": "detect"
         }
     },
+    "ignorePatterns": ["/dist", "*.config.*"],
     "rules": {}
 }

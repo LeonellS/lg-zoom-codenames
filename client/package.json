@@ -43,6 +43,7 @@
         "eslint-plugin-react": "^7.28.0",
         "eslint-plugin-react-hooks": "^4.3.0",
         "html-webpack-plugin": "^5.5.0",
+        "html-webpack-skip-assets-plugin": "^1.0.3",
         "jest": "^27.4.7",
         "mini-css-extract-plugin": "^2.5.3",
         "modern-normalize": "^1.1.0",
