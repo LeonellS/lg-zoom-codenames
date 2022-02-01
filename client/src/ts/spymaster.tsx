@@ -1,5 +1,5 @@
 import React from 'react'
 import { render } from 'react-dom'
-import App from './components/App'
+import SpymasterApp from './components/SpymasterApp'
 
-render(<App />, document.getElementById('app'))
+render(<SpymasterApp />, document.getElementById('app'))
