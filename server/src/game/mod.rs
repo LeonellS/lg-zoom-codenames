@@ -165,7 +165,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Game {
                             });
                         }
                     }
-                    "turn_card" => {
+                    "click_card" => {
                         if let Some(payload) = payload {
                             if let Ok(ClickCardAction { card_uuid }) =
                                 serde_json::from_str(&payload)

@@ -23,6 +23,7 @@ pub enum CardType {
 pub struct Card {
     pub uuid: Uuid,
     pub word: String,
+    #[serde(rename = "type")]
     pub card_type: CardType,
     pub turned: bool,
 }

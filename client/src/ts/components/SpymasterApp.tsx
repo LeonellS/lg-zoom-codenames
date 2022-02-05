@@ -4,14 +4,18 @@ import {
     stringifyAction,
     ClickCardAction,
     JoinGameAction,
-    // SendWordListAction,
+    SendWordListAction,
 } from '../action'
+import { Card, CardType } from '../game/card'
 
 const SpymasterApp = (): ReactElement => {
-    const [state, setState] = useState('connection uninitialised')
-    const [code, setCode] = useState('')
-    const [messages, setMessages] = useState<string[]>([])
     const ws = useRef<WebSocket | null>(null)
+
+    const [state, setState] = useState('connection uninitialised')
+
+    const [code, setCode] = useState('')
+
+    const [cards, setCards] = useState<Card[]>([])
 
     useEffect(() => {
         ws.current = new WebSocket(
@@ -27,21 +31,42 @@ const SpymasterApp = (): ReactElement => {
         })
 
         ws.current.addEventListener('message', (e) => {
-            setMessages((prevState) => [...prevState, e.data as string])
-
-            setState(`connection message: ${e.data as string}`)
-
             const { action, payload }: Action = JSON.parse(e.data as string)
 
             switch (action) {
-                case 'send_word_list':
-                    // const sendWordListAction: SendWordListAction =
-                    //     JSON.parse(payload)
-                    break
-                case 'click_card': {
-                    const clickCardAction: ClickCardAction = JSON.parse(payload)
+                case 'send_word_list': {
+                    if (payload != null) {
+                        const { cards }: SendWordListAction =
+                            JSON.parse(payload)
 
-                    setState(`card clicked: ${clickCardAction.cardUuid}`)
+                        setCards(cards)
+                    }
+
+                    break
+                }
+                case 'click_card': {
+                    if (payload != null) {
+                        const { cardUuid }: ClickCardAction =
+                            JSON.parse(payload)
+
+                        console.log(cardUuid)
+
+                        setCards((prevState) =>
+                            prevState.map((c) => {
+                                if (c.uuid === cardUuid) {
+                                    c.turned = true
+                                    return c
+                                } else {
+                                    return c
+                                }
+                            })
+                        )
+                    }
+
+                    break
+                }
+                case 'game_disconnect': {
+                    setCards([])
 
                     break
                 }
@@ -67,18 +92,66 @@ const SpymasterApp = (): ReactElement => {
     return (
         <div>
             <h1>Spymaster App: {state}</h1>
+
             <input
                 type="text"
                 placeholder="code"
                 onChange={(e) => setCode(e.target.value)}
             />
+
             <button onClick={handleJoinClick}>Join</button>
-            <p>Messages:</p>
-            <ul>
-                {messages.map((v, k) => (
-                    <li key={k}>{v}</li>
-                ))}
-            </ul>
+
+            <h2>Assassin</h2>
+            {cards
+                .filter((c) => c.type === CardType.Assassin)
+                .map((c) =>
+                    c.turned ? (
+                        <p key={c.uuid} style={{ color: 'gray' }}>
+                            {c.word}
+                        </p>
+                    ) : (
+                        <p key={c.uuid}>{c.word}</p>
+                    )
+                )}
+
+            <h2>Red</h2>
+            {cards
+                .filter((c) => c.type === CardType.Red)
+                .map((c) =>
+                    c.turned ? (
+                        <p key={c.uuid} style={{ color: 'gray' }}>
+                            {c.word}
+                        </p>
+                    ) : (
+                        <p key={c.uuid}>{c.word}</p>
+                    )
+                )}
+
+            <h2>Blue</h2>
+            {cards
+                .filter((c) => c.type === CardType.Blue)
+                .map((c) =>
+                    c.turned ? (
+                        <p key={c.uuid} style={{ color: 'gray' }}>
+                            {c.word}
+                        </p>
+                    ) : (
+                        <p key={c.uuid}>{c.word}</p>
+                    )
+                )}
+
+            <h2>Bystander</h2>
+            {cards
+                .filter((c) => c.type === CardType.Bystander)
+                .map((c) =>
+                    c.turned ? (
+                        <p key={c.uuid} style={{ color: 'gray' }}>
+                            {c.word}
+                        </p>
+                    ) : (
+                        <p key={c.uuid}>{c.word}</p>
+                    )
+                )}
         </div>
     )
 }

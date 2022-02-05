@@ -1,21 +1,24 @@
+import { Card } from './game/card'
+import { StartingTeam } from './game/team'
+
 interface Action {
     action: string
-    payload: string
+    payload: string | null
 }
 
 interface GameStartAction {
     code: string
-    startingTeam: string
-    cards: string[]
+    startingTeam: StartingTeam
+    cards: Card[]
 }
 
 interface NewGameAction {
-    startingTeam: string
-    cards: string[]
+    startingTeam: StartingTeam
+    cards: Card[]
 }
 
 interface NewWordListAction {
-    cards: string[]
+    cards: Card[]
 }
 
 interface ClickCardAction {
@@ -23,14 +26,17 @@ interface ClickCardAction {
 }
 
 interface SendWordListAction {
-    cards: string[]
+    cards: Card[]
 }
 
 interface JoinGameAction {
     code: string
 }
 
-function stringifyAction(action: string, payload: object): string {
+function stringifyAction(
+    action: string,
+    payload: object | null = null
+): string {
     const actionObject: Action = {
         action: action,
         payload: JSON.stringify(payload),

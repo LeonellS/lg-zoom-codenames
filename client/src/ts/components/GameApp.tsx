@@ -1,10 +1,51 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
-import { Action } from '../action'
+import {
+    Action,
+    ClickCardAction,
+    GameStartAction,
+    NewGameAction,
+    NewWordListAction,
+    stringifyAction,
+} from '../action'
+import { Card } from '../game/card'
+import { StartingTeam } from '../game/team'
+
+interface CardButtonProps {
+    uuid: string
+    word: string
+    ws: WebSocket | null
+}
+
+const CardButton = ({ uuid, word, ws }: CardButtonProps): ReactElement => {
+    function handleClick(): void {
+        const clickCardAction: ClickCardAction = {
+            cardUuid: uuid,
+        }
+
+        ws?.send(stringifyAction('click_card', clickCardAction))
+    }
+
+    return <button onClick={handleClick}>{word}</button>
+}
 
 const GameApp = (): ReactElement => {
-    const [state, setState] = useState('connection uninitialised')
-    const [messages, setMessages] = useState<string[]>([])
     const ws = useRef<WebSocket | null>(null)
+
+    const [state, setState] = useState('connection uninitialised')
+
+    const [code, setCode] = useState<string | null>(null)
+
+    const [startingTeam, setStartingTeam] = useState<StartingTeam | null>(null)
+
+    const [cards, setCards] = useState<Card[]>([])
+
+    function handleNewGameClick(): void {
+        ws.current?.send(stringifyAction('new_game'))
+    }
+
+    function handleNewWordListClick(): void {
+        ws.current?.send(stringifyAction('new_word_list'))
+    }
 
     useEffect(() => {
         ws.current = new WebSocket(
@@ -20,34 +61,67 @@ const GameApp = (): ReactElement => {
         })
 
         ws.current.addEventListener('message', (e) => {
-            setMessages((prevState) => [...prevState, e.data as string])
-
-            setState(`connection message: ${e.data as string}`)
-
-            const { action }: Action = JSON.parse(e.data as string)
+            const { action, payload }: Action = JSON.parse(e.data as string)
 
             switch (action) {
-                case 'game_start':
+                case 'game_start': {
+                    if (payload != null) {
+                        const { code, startingTeam, cards }: GameStartAction =
+                            JSON.parse(payload)
+
+                        setCode(code)
+                        setStartingTeam(startingTeam)
+                        setCards(cards)
+                    }
+
                     break
-                case 'new_game':
+                }
+                case 'new_game': {
+                    if (payload != null) {
+                        const { startingTeam, cards }: NewGameAction =
+                            JSON.parse(payload)
+
+                        setStartingTeam(startingTeam)
+                        setCards(cards)
+                    }
+
                     break
-                case 'new_word_list':
+                }
+                case 'new_word_list': {
+                    if (payload != null) {
+                        const { cards }: NewWordListAction = JSON.parse(payload)
+
+                        setCards(cards)
+                    }
+
                     break
+                }
                 default:
                     break
             }
         })
+
+        ws.current.addEventListener('error', () => {
+            setState('connection errored')
+        })
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
         <div>
             <h1>Game App: {state}</h1>
-            <p>Messages:</p>
-            <ul>
-                {messages.map((v, k) => (
-                    <li key={k}>{v}</li>
-                ))}
-            </ul>
+            <button onClick={handleNewGameClick}>New Game</button>
+            <button onClick={handleNewWordListClick}>New Word List</button>
+            {code != null && <p>Code: {code}</p>}
+            {startingTeam != null && <p>Starting Team: {startingTeam}</p>}
+            {cards.map((c) => (
+                <CardButton
+                    key={c.uuid}
+                    uuid={c.uuid}
+                    word={c.word}
+                    ws={ws.current}
+                />
+            ))}
         </div>
     )
 }
