@@ -1,8 +1,19 @@
-use crate::action::Action;
-use crate::message::{GameStart, GameStop};
+mod add_spymaster;
+mod card;
+mod remove_spymaster;
+mod starting_team;
+
+pub use self::card::{generate_cards, Card, CardType};
+pub use self::starting_team::StartingTeam;
+use crate::action;
+use crate::action::{Action, ClickCardAction, GameStartAction, NewGameAction, NewWordListAction};
+use crate::message::{ClickCard, GameStart, GameStop, RemoveGame, SendWordList};
 use crate::server::Server;
 use crate::spymaster::Spymaster;
-use actix::{Actor, ActorContext, Addr, AsyncContext, Running, StreamHandler};
+use actix::{
+    fut, Actor, ActorContext, ActorFuture, Addr, AsyncContext, ContextFutureSpawner, Running,
+    StreamHandler, WrapFuture,
+};
 use actix_web_actors::ws;
 use actix_web_actors::ws::{Message, ProtocolError};
 use log::warn;
@@ -15,14 +26,20 @@ pub struct Game {
     server: Addr<Server>,
     heartbeat: Instant,
     spymasters: Vec<Addr<Spymaster>>,
+    starting_team: StartingTeam,
+    cards: Vec<Card>,
 }
 
 impl Game {
     pub fn new(server: Addr<Server>) -> Self {
+        let starting_team: StartingTeam = rand::random();
+
         Self {
             server,
             heartbeat: Instant::now(),
             spymasters: Vec::new(),
+            starting_team,
+            cards: self::generate_cards(&starting_team),
         }
     }
 
@@ -51,12 +68,39 @@ impl Actor for Game {
         self.server.do_send(GameStart {
             game: context.address(),
         });
+
+        self.server
+            .send(GameStart {
+                game: context.address(),
+            })
+            .into_actor(self)
+            .then(|result, actor, context| {
+                if let Ok(code) = result {
+                    if let Ok(action) = action::stringify(
+                        "game_start",
+                        GameStartAction {
+                            code,
+                            starting_team: actor.starting_team,
+                            cards: actor.cards.clone(),
+                        },
+                    ) {
+                        context.text(action);
+                    }
+                }
+
+                fut::ready(())
+            })
+            .wait(context);
     }
 
     fn stopping(&mut self, context: &mut Self::Context) -> Running {
         self.server.do_send(GameStop {
             game: context.address(),
         });
+
+        for spymaster in &self.spymasters {
+            spymaster.do_send(RemoveGame);
+        }
 
         Running::Stop
     }
@@ -73,14 +117,80 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Game {
         };
 
         match message {
-            Message::Text(message) => match serde_json::from_str::<Action>(&message) {
-                Ok(Action { action, payload }) => match action.as_str() {
+            Message::Text(message) => {
+                let Action { action, payload } = match serde_json::from_str(&message) {
+                    Ok(action) => action,
+                    Err(_) => {
+                        warn!("(game) Received faulty action: {}", message);
+                        return;
+                    }
+                };
+
+                match action.as_str() {
+                    "new_game" => {
+                        self.starting_team = match self.starting_team {
+                            StartingTeam::Red => StartingTeam::Blue,
+                            StartingTeam::Blue => StartingTeam::Red,
+                        };
+
+                        self.cards = self::generate_cards(&self.starting_team);
+
+                        if let Ok(action) = action::stringify(
+                            "new_game",
+                            NewGameAction {
+                                starting_team: self.starting_team,
+                                cards: self.cards.clone(),
+                            },
+                        ) {
+                            context.text(action);
+                        }
+
+                        for spymaster in &self.spymasters {
+                            spymaster.do_send(SendWordList {
+                                cards: self.cards.clone(),
+                            });
+                        }
+                    }
+                    "new_word_list" => {
+                        self.cards = self::generate_cards(&self.starting_team);
+
+                        if let Ok(action) = action::stringify(
+                            "new_word_list",
+                            NewWordListAction {
+                                cards: self.cards.clone(),
+                            },
+                        ) {
+                            context.text(action);
+                        }
+
+                        for spymaster in &self.spymasters {
+                            spymaster.do_send(SendWordList {
+                                cards: self.cards.clone(),
+                            });
+                        }
+                    }
+                    "turn_card" => {
+                        if let Some(payload) = payload {
+                            if let Ok(ClickCardAction { card_uuid }) =
+                                serde_json::from_str(&payload)
+                            {
+                                for card in &mut self.cards {
+                                    if card.uuid == card_uuid {
+                                        card.turned = true;
+
+                                        for spymaster in &self.spymasters {
+                                            spymaster.do_send(ClickCard { card_uuid });
+                                        }
+
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     _ => (),
-                },
-                Err(_) => {
-                    warn!("Received faulty action: {}", message);
                 }
-            },
+            }
             Message::Ping(message) => {
                 self.update_heartbeat();
                 context.pong(&message);

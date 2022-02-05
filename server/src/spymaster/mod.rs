@@ -1,10 +1,19 @@
-use crate::action::Action;
-use crate::message::{SpymasterStart, SpymasterStop};
+mod click_card;
+mod remove_game;
+mod send_word_list;
+
+use crate::action;
+use crate::action::{Action, JoinGameAction};
+use crate::game::Game;
+use crate::message::{JoinGame, RemoveSpymaster, SpymasterStart, SpymasterStop};
 use crate::server::Server;
-use actix::{Actor, ActorContext, Addr, AsyncContext, Running, StreamHandler};
+use actix::{
+    fut, Actor, ActorContext, ActorFuture, Addr, AsyncContext, ContextFutureSpawner, Running,
+    StreamHandler, WrapFuture,
+};
 use actix_web_actors::ws;
 use actix_web_actors::ws::{Message, ProtocolError};
-use log::warn;
+use log::{debug, warn};
 use std::time::{Duration, Instant};
 
 const HEARTBEAT_INTERVAL: Duration = Duration::from_secs(5);
@@ -13,6 +22,7 @@ const CLIENT_TIMEOUT: Duration = Duration::from_secs(10);
 pub struct Spymaster {
     server: Addr<Server>,
     heartbeat: Instant,
+    game: Option<Addr<Game>>,
 }
 
 impl Spymaster {
@@ -20,6 +30,7 @@ impl Spymaster {
         Self {
             server,
             heartbeat: Instant::now(),
+            game: None,
         }
     }
 
@@ -51,9 +62,17 @@ impl Actor for Spymaster {
     }
 
     fn stopping(&mut self, context: &mut Self::Context) -> Running {
+        let address = context.address();
+
         self.server.do_send(SpymasterStop {
-            spymaster: context.address(),
+            spymaster: address.clone(),
         });
+
+        if let Some(game) = &self.game {
+            game.do_send(RemoveSpymaster {
+                spymaster: address.clone(),
+            });
+        }
 
         Running::Stop
     }
@@ -70,14 +89,60 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Spymaster {
         };
 
         match message {
-            Message::Text(message) => match serde_json::from_str::<Action>(&message) {
-                Ok(Action { action, payload }) => match action.as_str() {
+            Message::Text(message) => {
+                let Action { action, payload } = match serde_json::from_str(&message) {
+                    Ok(action) => action,
+                    Err(_) => {
+                        warn!("(spymaster) Received faulty action: {}", message);
+                        return;
+                    }
+                };
+
+                match action.as_str() {
+                    "join_game" => {
+                        if let Some(payload) = payload {
+                            if let Ok(JoinGameAction { code }) = serde_json::from_str(&payload) {
+                                self.server
+                                    .send(JoinGame {
+                                        code,
+                                        spymaster: context.address(),
+                                    })
+                                    .into_actor(self)
+                                    .then(|result, actor, context| {
+                                        match result {
+                                            Ok(Some(game)) => {
+                                                actor.game = Some(game.clone());
+
+                                                if let Ok(action) =
+                                                    action::stringify_without_payload(
+                                                        "join_success",
+                                                    )
+                                                {
+                                                    context.text(action);
+                                                }
+
+                                                debug!("game exists!");
+                                            }
+                                            _ => {
+                                                if let Ok(action) =
+                                                    action::stringify_without_payload("join_fail")
+                                                {
+                                                    context.text(action);
+                                                }
+
+                                                debug!("game does not exists!");
+                                            }
+                                        }
+
+                                        fut::ready(())
+                                    })
+                                    .wait(context);
+                            }
+                        }
+                    }
                     _ => (),
-                },
-                Err(_) => {
-                    warn!("Received faulty action: {}", message);
                 }
-            },
+            }
             Message::Ping(message) => {
                 self.update_heartbeat();
                 context.pong(&message);
