@@ -65,10 +65,6 @@ impl Actor for Game {
     fn started(&mut self, context: &mut Self::Context) {
         self.heartbeat(context);
 
-        self.server.do_send(GameStart {
-            game: context.address(),
-        });
-
         self.server
             .send(GameStart {
                 game: context.address(),
