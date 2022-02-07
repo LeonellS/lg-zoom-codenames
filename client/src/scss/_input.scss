@@ -1,0 +1,27 @@
+.input-container {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.input__label {
+    padding-left: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.input {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    background-color: $background-1;
+    color: $white;
+
+    font-size: $font-size;
+    font-weight: bold;
+
+    text-align: center;
+    text-transform: uppercase;
+
+    border: none;
+    border-radius: $border-radius-medium;
+}

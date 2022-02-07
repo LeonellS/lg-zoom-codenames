@@ -1,0 +1,58 @@
+.header {
+    position: fixed;
+
+    display: flex;
+
+    align-items: stretch;
+
+    width: 100vw;
+    height: 2.5rem;
+
+    padding-left: 1.5rem;
+
+    background-color: $background-0;
+
+    font-size: $font-size-small;
+}
+
+.header__title {
+    color: $white;
+
+    align-self: center;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+.header__nav {
+    display: none;
+    margin-left: 1rem;
+}
+
+.header__button {
+    height: 100%;
+
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+
+    background: 0;
+    border: 0;
+
+    color: $grey;
+
+    &:hover {
+        background-color: $background-1;
+        color: $white;
+    }
+}
+
+@media only screen and (min-width: $breakpoint-mobile) {
+    .header {
+        padding-left: 4rem;
+    }
+
+    .header__nav {
+        display: block;
+    }
+}

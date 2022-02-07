@@ -1,0 +1,48 @@
+.notification__container {
+    position: fixed;
+
+    bottom: 0;
+    right: 0;
+
+    margin-bottom: 0.5rem;
+    margin-right: 0.5rem;
+
+    width: 18.75rem;
+
+    display: flex;
+
+    flex-direction: column-reverse;
+
+    z-index: 2000;
+
+    > * {
+        margin-top: 0.75rem;
+    }
+}
+
+.notification {
+    background-color: rgba(0, 0, 0, 0.85);
+
+    border-radius: $border-radius-medium;
+
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+
+    font-size: $font-size-small;
+
+    visibility: hidden;
+    opacity: 0;
+
+    transition-property: visibility, opacity;
+    transition-timing-function: ease-in-out;
+
+    transition-duration: $transition-duration-fade-out;
+}
+
+.notification--show {
+    visibility: visible;
+    opacity: 1;
+
+    transition-duration: $transition-duration-reveal;
+}
