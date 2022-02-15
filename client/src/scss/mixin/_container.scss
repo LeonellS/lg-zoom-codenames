@@ -1,0 +1,16 @@
+@mixin container {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+@mixin container-restrict {
+    width: $container-restrict;
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+}

@@ -4,9 +4,12 @@
 
 @import 'body';
 
-@import 'container';
-@import 'noscript';
-@import 'header';
-@import 'button';
+@import 'mixin/container';
+@import 'mixin/reset';
+@import 'mixin/transition';
+
+@import 'components/common/noscript';
+@import 'components/common/header';
+@import 'components/common/button';
 
 @import 'views/index';

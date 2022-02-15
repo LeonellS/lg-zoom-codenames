@@ -1,0 +1,40 @@
+.fullscreen {
+    @include reset-button;
+
+    display: none;
+
+    position: fixed;
+
+    top: 0;
+    right: 0;
+
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    color: $grey;
+
+    border: 1px solid $grey;
+    border-radius: $border-radius-medium;
+
+    font-size: $font-size-small;
+
+    @include transition(border-color, color);
+
+    z-index: 1100;
+
+    &:hover {
+        color: $white;
+        border-color: $white;
+    }
+}
+
+@include desktop-only {
+    .fullscreen {
+        display: block;
+    }
+}

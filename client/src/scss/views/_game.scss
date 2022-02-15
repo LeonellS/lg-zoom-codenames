@@ -1,69 +1,48 @@
-.game-container__mobile {
+.game__container {
+    @include container;
+}
+
+.game__mobile {
+    display: flex;
+
     flex-direction: column;
 
     text-align: center;
 }
 
-.mobile__error {
+.mobile__text {
     margin-top: 0.75rem;
 
     font-size: $font-size-medium;
+
+    > * {
+        margin: 0;
+
+        &:not(:first-child) {
+            margin-top: 0.15rem;
+        }
+    }
 }
 
 .mobile__title {
     font-weight: bold;
 }
 
-.game-container {
+.game__desktop {
     display: none;
+
+    width: 100%;
+    height: 100%;
+
+    justify-content: center;
 }
 
-.board {
-    display: grid;
-
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-
-    gap: 1.125vmin;
-}
-
-.card {
-    cursor: pointer;
-}
-
-@media only screen and (orientation: landscape) {
-    .game-container {
-        flex-direction: row;
-    }
-
-    .card {
-        width: auto;
-        height: 100%;
-    }
-}
-
-@media only screen and (orientation: portrait) {
-    .game-container {
-        flex-direction: column;
-    }
-
-    .card {
-        width: 100%;
-        height: auto;
-    }
-}
-
-@media only screen and (min-width: $breakpoint-mobile) {
-    .game-container__mobile {
+@include desktop-only {
+    .game__mobile {
         display: none;
     }
 
-    .game-container {
+    .game__desktop {
         display: flex;
-
-        padding-top: 3.5rem;
-        padding-bottom: 1rem;
-
-        align-items: stretch;
     }
 }

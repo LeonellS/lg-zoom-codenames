@@ -1,97 +1,77 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { Action } from '../action/action'
 import {
-    Action,
-    ClickCardAction,
-    GameStartAction,
-    NewGameAction,
-    NewWordListAction,
-    stringifyAction,
-} from '../action'
-import { Card } from '../game/card'
-import { StartingTeam } from '../game/team'
-
-interface CardButtonProps {
-    uuid: string
-    word: string
-    ws: WebSocket | null
-}
-
-const CardButton = ({ uuid, word, ws }: CardButtonProps): ReactElement => {
-    function handleClick(): void {
-        const clickCardAction: ClickCardAction = {
-            cardUuid: uuid,
-        }
-
-        ws?.send(stringifyAction('click_card', clickCardAction))
-    }
-
-    return <button onClick={handleClick}>{word}</button>
-}
+    GameStartPayload,
+    NewGamePayload,
+    NewWordListPayload,
+} from '../action/payload'
+import { newGame, newWordList, setCode } from '../store/game'
+import { createNotification } from '../store/notification'
+import { useAppSelector } from '../store/store'
+import Header from './common/Header'
+import Board from './game/Board'
+import Dialog from './game/Dialog'
+import Notification from './common/Notification'
 
 const GameApp = (): ReactElement => {
-    const ws = useRef<WebSocket | null>(null)
+    const dispatch = useDispatch()
 
-    const [state, setState] = useState('connection uninitialised')
+    const wsRef = useRef<WebSocket | null>(null)
 
-    const [code, setCode] = useState<string | null>(null)
+    const [ws, setWs] = useState(wsRef.current)
 
-    const [startingTeam, setStartingTeam] = useState<StartingTeam | null>(null)
-
-    const [cards, setCards] = useState<Card[]>([])
-
-    function handleNewGameClick(): void {
-        ws.current?.send(stringifyAction('new_game'))
-    }
-
-    function handleNewWordListClick(): void {
-        ws.current?.send(stringifyAction('new_word_list'))
-    }
+    const cards = useAppSelector((state) => state.game.cards)
 
     useEffect(() => {
-        ws.current = new WebSocket(
+        const wsConnection = new WebSocket(
             'ws://127.0.0.1:80/screen-share-codenames/game/ws'
         )
 
-        ws.current.addEventListener('open', () => {
-            setState('connection opened')
+        wsConnection.addEventListener('open', () => {
+            dispatch(createNotification('WebSocket connection opened'))
         })
 
-        ws.current.addEventListener('close', () => {
-            setState('connection closed')
+        wsConnection.addEventListener('close', () => {
+            dispatch(createNotification('WebSocket connection closed'))
         })
 
-        ws.current.addEventListener('message', (e) => {
+        wsConnection.addEventListener('message', (e) => {
             const { action, payload }: Action = JSON.parse(e.data as string)
 
             switch (action) {
                 case 'game_start': {
                     if (payload != null) {
-                        const { code, startingTeam, cards }: GameStartAction =
+                        const { code, cards, startingTeam }: GameStartPayload =
                             JSON.parse(payload)
 
-                        setCode(code)
-                        setStartingTeam(startingTeam)
-                        setCards(cards)
+                        const newGamePayload: NewGamePayload = {
+                            cards,
+                            startingTeam,
+                        }
+
+                        dispatch(setCode(code))
+                        dispatch(newGame(newGamePayload))
                     }
 
                     break
                 }
                 case 'new_game': {
                     if (payload != null) {
-                        const { startingTeam, cards }: NewGameAction =
+                        const newGamePayload: NewGamePayload =
                             JSON.parse(payload)
 
-                        setStartingTeam(startingTeam)
-                        setCards(cards)
+                        dispatch(newGame(newGamePayload))
                     }
 
                     break
                 }
                 case 'new_word_list': {
                     if (payload != null) {
-                        const { cards }: NewWordListAction = JSON.parse(payload)
+                        const { cards }: NewWordListPayload =
+                            JSON.parse(payload)
 
-                        setCards(cards)
+                        dispatch(newWordList(cards))
                     }
 
                     break
@@ -101,28 +81,39 @@ const GameApp = (): ReactElement => {
             }
         })
 
-        ws.current.addEventListener('error', () => {
-            setState('connection errored')
+        wsConnection.addEventListener('error', () => {
+            dispatch(createNotification('WebSocket encountered an error'))
         })
+
+        setWs(wsConnection)
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
-        <div>
-            <h1>Game App: {state}</h1>
-            <button onClick={handleNewGameClick}>New Game</button>
-            <button onClick={handleNewWordListClick}>New Word List</button>
-            {code != null && <p>Code: {code}</p>}
-            {startingTeam != null && <p>Starting Team: {startingTeam}</p>}
-            {cards.map((c) => (
-                <CardButton
-                    key={c.uuid}
-                    uuid={c.uuid}
-                    word={c.word}
-                    ws={ws.current}
-                />
-            ))}
-        </div>
+        <>
+            <Header forGame={true} />
+
+            <div className="game__container">
+                <div className="game__mobile">
+                    <img
+                        src="/public/asset/device.svg"
+                        alt="Icon of desktop, laptop, and tablet"
+                    />
+                    <div className="mobile__text">
+                        <p className="mobile__title">Screen Share Codenames</p>
+                        <p>works best on bigger screens</p>
+                    </div>
+                </div>
+
+                <div className="game__desktop">
+                    <Board ws={ws} cards={cards} />
+                </div>
+            </div>
+
+            <Dialog ws={ws} />
+            <Notification />
+        </>
     )
 }
 

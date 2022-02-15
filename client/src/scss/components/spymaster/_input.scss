@@ -1,7 +1,8 @@
-.input-container {
+.input__container {
     display: flex;
-
     flex-direction: column;
+
+    margin-bottom: 1rem;
 }
 
 .input__label {
@@ -10,13 +11,12 @@
 }
 
 .input {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
 
     background-color: $background-1;
     color: $white;
 
-    font-size: $font-size;
     font-weight: bold;
 
     text-align: center;

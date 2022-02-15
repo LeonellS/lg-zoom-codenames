@@ -1,20 +1,14 @@
 .dialog__container {
+    @include container;
+
     position: fixed;
 
     top: 0;
     left: 0;
 
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
     background-color: rgba(0, 0, 0, 0.4);
 
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .dialog__container--hide {
@@ -28,22 +22,22 @@
 }
 
 .dialog {
-    width: 18.75rem;
+    width: 18.5rem;
 
     display: flex;
 
-    padding: 1.5rem;
+    padding: 1.25rem;
 
     flex-direction: column;
 
     background-color: $background-0;
 
-    border-radius: $border-radius-extra-large;
+    border-radius: $border-radius-large;
 
     box-shadow: $shadow;
 }
 
-.dialog__title {
+.dialog__message {
     margin-bottom: 1.5rem;
 }
 

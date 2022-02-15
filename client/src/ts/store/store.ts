@@ -1,7 +1,10 @@
 import { configureStore, Dispatch } from '@reduxjs/toolkit'
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
+import notification from './notification'
+import dialog from './dialog'
+import game from './game'
 
-const reducer = {}
+const reducer = { notification, dialog, game }
 
 const store = configureStore({ reducer })
 

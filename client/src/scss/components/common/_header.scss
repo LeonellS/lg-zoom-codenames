@@ -1,0 +1,27 @@
+.header {
+    position: fixed;
+
+    display: flex;
+
+    align-items: center;
+
+    width: 100vw;
+    height: 2.5rem;
+
+    background-color: $background-0;
+
+    font-size: $font-size-small;
+
+    z-index: 1000;
+}
+
+.header__title {
+    margin-left: 1.125rem;
+    margin-right: 1.125rem;
+
+    color: $white;
+
+    font-weight: bold;
+
+    text-decoration: none;
+}

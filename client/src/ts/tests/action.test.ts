@@ -1,4 +1,4 @@
-import { stringifyAction } from '../action'
+import { stringifyAction } from '../action/action'
 
 test('stringify action with payload', () => {
     const result = stringifyAction('join_game', { code: 'ABCD' })

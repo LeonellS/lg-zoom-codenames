@@ -1,0 +1,31 @@
+.game-menu {
+    display: none;
+
+    height: 100%;
+
+    margin-left: 1rem;
+}
+
+.game-menu__button {
+    @include reset-button;
+
+    height: 100%;
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    color: $grey;
+
+    @include transition(background-color);
+
+    &:hover {
+        background-color: $background-1;
+        color: $white;
+    }
+}
+
+@include desktop-only {
+    .game-menu {
+        display: flex;
+    }
+}

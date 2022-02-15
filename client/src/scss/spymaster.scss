@@ -4,11 +4,17 @@
 
 @import 'body';
 
-@import 'container';
-@import 'noscript';
-@import 'header';
-@import 'button';
-@import 'input';
-@import 'notification';
+@import 'mixin/container';
+@import 'mixin/breakpoint';
+@import 'mixin/reset';
+@import 'mixin/transition';
+
+@import 'components/common/noscript';
+@import 'components/common/header';
+@import 'components/common/button';
+@import 'components/common/notification';
+
+@import 'components/spymaster/input';
+@import 'components/spymaster/word-list';
 
 @import 'views/spymaster';

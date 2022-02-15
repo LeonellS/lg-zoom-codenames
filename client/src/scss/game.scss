@@ -4,11 +4,20 @@
 
 @import 'body';
 
-@import 'container';
-@import 'noscript';
-@import 'header';
-@import 'button';
-@import 'dialog';
-@import 'notification';
+@import 'mixin/container';
+@import 'mixin/breakpoint';
+@import 'mixin/reset';
+@import 'mixin/transition';
+
+@import 'components/common/noscript';
+@import 'components/common/header';
+@import 'components/common/button';
+@import 'components/common/notification';
+
+@import 'components/game/game-menu';
+@import 'components/game/fullscreen';
+@import 'components/game/board';
+@import 'components/game/card';
+@import 'components/game/dialog';
 
 @import 'views/game';

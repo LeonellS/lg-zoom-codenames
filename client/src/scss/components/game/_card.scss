@@ -1,0 +1,58 @@
+.card {
+    @include reset-button;
+
+    position: relative;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    text-transform: capitalize;
+
+    cursor: pointer;
+
+    transition-duration: $transition-duration-reveal;
+    transition-property: fill;
+    transition-timing-function: ease-in-out;
+}
+
+.card--unturned {
+    fill: $card-yellow;
+
+    text {
+        fill: $card-dark-yellow;
+    }
+}
+
+.card--assassin {
+    fill: $card-dark-grey;
+
+    text {
+        fill: $white;
+    }
+}
+
+.card--red {
+    fill: $card-red;
+
+    text {
+        fill: $white;
+    }
+}
+
+.card--blue {
+    fill: $card-blue;
+
+    text {
+        fill: $white;
+    }
+}
+
+.card--bystander {
+    fill: $card-light-grey;
+
+    text {
+        fill: $card-dark-grey;
+    }
+}

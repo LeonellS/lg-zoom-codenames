@@ -1,9 +1,13 @@
-.index {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 0;
+.index__container {
+    @include container;
 }
 
-.index > *:not(:first-child) {
-    margin-top: 2rem;
+.index {
+    @include container-restrict;
+
+    flex-direction: column;
+
+    > *:not(:first-child) {
+        margin-top: 1.5rem;
+    }
 }

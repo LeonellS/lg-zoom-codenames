@@ -1,5 +1,5 @@
-import { Card } from './game/card'
-import { StartingTeam } from './game/team'
+import { Card } from '../game/card'
+import { StartingTeam } from '../game/team'
 
 interface Action {
     action: string

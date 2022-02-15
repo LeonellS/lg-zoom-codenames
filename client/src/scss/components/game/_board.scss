@@ -1,0 +1,27 @@
+.board__container {
+    @include container;
+
+    padding-top: 3.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.board {
+    display: grid;
+
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+
+    aspect-ratio: 3/2;
+}
+
+@media only screen and (max-aspect-ratio: 3/2) {
+    .board {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-aspect-ratio: 3/2) {
+    .board {
+        height: 100%;
+    }
+}

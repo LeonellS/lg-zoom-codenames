@@ -1,72 +1,75 @@
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
-import {
-    Action,
-    stringifyAction,
-    ClickCardAction,
-    JoinGameAction,
-    SendWordListAction,
-} from '../action'
-import { Card, CardType } from '../game/card'
+import { Action } from '../action/action'
+import { turnCard, updateCards } from '../store/game'
+import { createNotification } from '../store/notification'
+import { useAppDispatch } from '../store/store'
+import WordList from './spymaster/WordList'
+import JoinGameForm from './spymaster/JoinGameForm'
+import Header from './common/Header'
+import Notification from './common/Notification'
+import { ClickCardPayload, SendWordListPayload } from '../action/payload'
 
 const SpymasterApp = (): ReactElement => {
-    const ws = useRef<WebSocket | null>(null)
+    const dispatch = useAppDispatch()
 
-    const [state, setState] = useState('connection uninitialised')
+    const wsRef = useRef<WebSocket | null>(null)
 
-    const [code, setCode] = useState('')
-
-    const [cards, setCards] = useState<Card[]>([])
+    const [ws, setWs] = useState(wsRef.current)
+    const [hasGame, setHasGame] = useState(false)
 
     useEffect(() => {
-        ws.current = new WebSocket(
+        const wsConnection = new WebSocket(
             'ws://127.0.0.1:80/screen-share-codenames/spymaster/ws'
         )
 
-        ws.current.addEventListener('open', () => {
-            setState('connection opened')
+        wsConnection.addEventListener('open', () => {
+            dispatch(createNotification('WebSocket connection opened'))
         })
 
-        ws.current.addEventListener('close', () => {
-            setState('connection closed')
+        wsConnection.addEventListener('close', () => {
+            dispatch(createNotification('WebSocket connection closed'))
         })
 
-        ws.current.addEventListener('message', (e) => {
+        wsConnection.addEventListener('message', (e) => {
             const { action, payload }: Action = JSON.parse(e.data as string)
 
+            console.log(`action: ${action}`)
+
             switch (action) {
+                case 'join_success': {
+                    setHasGame(true)
+
+                    break
+                }
+
+                case 'join_fail': {
+                    dispatch(createNotification('Game does not exist'))
+
+                    break
+                }
                 case 'send_word_list': {
                     if (payload != null) {
-                        const { cards }: SendWordListAction =
+                        const { cards }: SendWordListPayload =
                             JSON.parse(payload)
 
-                        setCards(cards)
+                        dispatch(updateCards(cards))
                     }
 
                     break
                 }
                 case 'click_card': {
                     if (payload != null) {
-                        const { cardUuid }: ClickCardAction =
+                        const { cardUuid }: ClickCardPayload =
                             JSON.parse(payload)
 
-                        console.log(cardUuid)
-
-                        setCards((prevState) =>
-                            prevState.map((c) => {
-                                if (c.uuid === cardUuid) {
-                                    c.turned = true
-                                    return c
-                                } else {
-                                    return c
-                                }
-                            })
-                        )
+                        dispatch(turnCard(cardUuid))
                     }
 
                     break
                 }
                 case 'game_disconnect': {
-                    setCards([])
+                    setHasGame(false)
+                    dispatch(createNotification('Gamemaster disconnected'))
 
                     break
                 }
@@ -75,84 +78,23 @@ const SpymasterApp = (): ReactElement => {
             }
         })
 
-        ws.current.addEventListener('error', () => {
-            setState('connection errored')
+        wsConnection.addEventListener('error', () => {
+            dispatch(createNotification('WebSocket encountered an error'))
         })
+
+        setWs(wsConnection)
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    function handleJoinClick(): void {
-        const joinGameAction: JoinGameAction = {
-            code: code,
-        }
-
-        ws.current?.send(stringifyAction('join_game', joinGameAction))
-    }
-
     return (
-        <div>
-            <h1>Spymaster App: {state}</h1>
+        <>
+            <Header forGame={false} />
 
-            <input
-                type="text"
-                placeholder="code"
-                onChange={(e) => setCode(e.target.value)}
-            />
+            {hasGame ? <WordList /> : <JoinGameForm ws={ws} />}
 
-            <button onClick={handleJoinClick}>Join</button>
-
-            <h2>Assassin</h2>
-            {cards
-                .filter((c) => c.type === CardType.Assassin)
-                .map((c) =>
-                    c.turned ? (
-                        <p key={c.uuid} style={{ color: 'gray' }}>
-                            {c.word}
-                        </p>
-                    ) : (
-                        <p key={c.uuid}>{c.word}</p>
-                    )
-                )}
-
-            <h2>Red</h2>
-            {cards
-                .filter((c) => c.type === CardType.Red)
-                .map((c) =>
-                    c.turned ? (
-                        <p key={c.uuid} style={{ color: 'gray' }}>
-                            {c.word}
-                        </p>
-                    ) : (
-                        <p key={c.uuid}>{c.word}</p>
-                    )
-                )}
-
-            <h2>Blue</h2>
-            {cards
-                .filter((c) => c.type === CardType.Blue)
-                .map((c) =>
-                    c.turned ? (
-                        <p key={c.uuid} style={{ color: 'gray' }}>
-                            {c.word}
-                        </p>
-                    ) : (
-                        <p key={c.uuid}>{c.word}</p>
-                    )
-                )}
-
-            <h2>Bystander</h2>
-            {cards
-                .filter((c) => c.type === CardType.Bystander)
-                .map((c) =>
-                    c.turned ? (
-                        <p key={c.uuid} style={{ color: 'gray' }}>
-                            {c.word}
-                        </p>
-                    ) : (
-                        <p key={c.uuid}>{c.word}</p>
-                    )
-                )}
-        </div>
+            <Notification />
+        </>
     )
 }
 

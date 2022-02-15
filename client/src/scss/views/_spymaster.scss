@@ -1,31 +1,16 @@
-.spymaster {
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 0;
+.spymaster__form {
+    @include container;
+}
+.form {
+    @include container-restrict;
 }
 
-.spymaster > *:not(:first-child) {
-    margin-top: 1.5rem;
-}
-
-.spymaster__container {
-    padding-top: 4.5rem;
-    padding-bottom: 4.5rem;
-
+.spymaster__word-list {
     display: flex;
-
-    justify-content: center;
-    align-items: center;
 
     width: 100%;
-    min-height: 100vh;
-}
-
-.word-list__container {
-    display: flex;
 
     flex-wrap: wrap;
-    flex-grow: 1;
 
     justify-content: center;
     align-items: flex-start;
@@ -33,60 +18,14 @@
     row-gap: 3rem;
 }
 
-.word-list {
-    width: 100%;
-    max-width: 240px;
-
-    text-align: center;
-}
-
-.word-list__header {
-    display: inline-block;
-
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    padding-left: 1.125rem;
-    padding-right: 1.125rem;
-
-    font-weight: bold;
-
-    border-radius: $border-radius-medium;
-}
-
-.word-list__header--assassin {
-    background-color: $card-dark-grey;
-}
-
-.word-list__header--red {
-    background-color: $card-red;
-}
-
-.word-list__header--blue {
-    background-color: $card-blue;
-}
-
-.word-list__header--bystander {
-    background-color: $card-light-grey;
-    color: $black;
-}
-
-.word-list__words {
-    margin: 0;
-    padding: 0;
-
-    list-style: none;
-
-    margin-top: 0.75rem;
-}
-
-.word-list__word {
-    margin: 0;
-
-    &:not(:first-child) {
-        margin-top: 1rem;
+@include mobile-only {
+    .spymaster__container {
+        padding-top: 4rem;
     }
 }
 
-.word-list__word--clicked {
-    color: $dark-grey;
+@include desktop-only {
+    .spymaster__container {
+        @include container;
+    }
 }
