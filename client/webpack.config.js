@@ -21,6 +21,12 @@ const postCssProductionPlugins = [
     ...postCssPlugins,
     PurgeCSS({
         content: ['./dist/*.html', './dist/public/js/*.js'],
+        safelist: [
+            /notification/,
+            /card/,
+            /word-list__header/,
+            /dialog__container/,
+        ],
     }),
 ]
 
