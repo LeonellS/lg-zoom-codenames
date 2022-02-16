@@ -11,7 +11,7 @@ const Header = ({ forGame }: Props): ReactElement => {
 
     return (
         <div className="header">
-            <a href="/" className="header__title">
+            <a href="/screen-share-codenames" className="header__title">
                 Screen Share Codenames
             </a>
             {forGame && <GameMenu code={code} />}
