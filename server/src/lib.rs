@@ -1,6 +1,7 @@
 mod action;
 mod game;
 mod message;
+mod payload;
 pub mod server;
 mod spymaster;
 

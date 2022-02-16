@@ -5,11 +5,11 @@ mod starting_team;
 
 pub use self::card::{generate_cards, Card, CardType};
 pub use self::starting_team::StartingTeam;
-use crate::action;
-use crate::action::{Action, ClickCardAction, GameStartAction, NewGameAction, NewWordListAction};
 use crate::message::{ClickCard, GameStart, GameStop, RemoveGame, SendWordList};
+use crate::payload::{ClickCardPayload, GameStartPayload, NewGamePayload, NewWordListPayload};
 use crate::server::Server;
 use crate::spymaster::Spymaster;
+use crate::{action, action::Action};
 use actix::{
     fut, Actor, ActorContext, ActorFuture, Addr, AsyncContext, ContextFutureSpawner, Running,
     StreamHandler, WrapFuture,
@@ -74,7 +74,7 @@ impl Actor for Game {
                 if let Ok(code) = result {
                     if let Ok(action) = action::stringify(
                         "game_start",
-                        GameStartAction {
+                        GameStartPayload {
                             code,
                             starting_team: actor.starting_team,
                             cards: actor.cards.clone(),
@@ -133,7 +133,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Game {
 
                         if let Ok(action) = action::stringify(
                             "new_game",
-                            NewGameAction {
+                            NewGamePayload {
                                 starting_team: self.starting_team,
                                 cards: self.cards.clone(),
                             },
@@ -152,7 +152,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Game {
 
                         if let Ok(action) = action::stringify(
                             "new_word_list",
-                            NewWordListAction {
+                            NewWordListPayload {
                                 cards: self.cards.clone(),
                             },
                         ) {
@@ -167,7 +167,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Game {
                     }
                     "click_card" => {
                         if let Some(payload) = payload {
-                            if let Ok(ClickCardAction { card_uuid }) =
+                            if let Ok(ClickCardPayload { card_uuid }) =
                                 serde_json::from_str(&payload)
                             {
                                 for card in &mut self.cards {

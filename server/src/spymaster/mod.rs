@@ -2,11 +2,11 @@ mod click_card;
 mod remove_game;
 mod send_word_list;
 
-use crate::action;
-use crate::action::{Action, JoinGameAction};
 use crate::game::Game;
 use crate::message::{JoinGame, RemoveSpymaster, SpymasterStart, SpymasterStop};
+use crate::payload::JoinGamePayload;
 use crate::server::Server;
+use crate::{action, action::Action};
 use actix::{
     fut, Actor, ActorContext, ActorFuture, Addr, AsyncContext, ContextFutureSpawner, Running,
     StreamHandler, WrapFuture,
@@ -101,7 +101,7 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for Spymaster {
                 match action.as_str() {
                     "join_game" => {
                         if let Some(payload) = payload {
-                            if let Ok(JoinGameAction { code }) = serde_json::from_str(&payload) {
+                            if let Ok(JoinGamePayload { code }) = serde_json::from_str(&payload) {
                                 self.server
                                     .send(JoinGame {
                                         code,
