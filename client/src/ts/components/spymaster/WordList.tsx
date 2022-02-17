@@ -2,12 +2,12 @@ import React, { ReactElement } from 'react'
 import { Card, CardType } from '../../game/card'
 import { useAppSelector } from '../../store/store'
 
-interface ListProps {
+interface Props {
     type: CardType
     cards: Card[]
 }
 
-const List = ({ type, cards }: ListProps): ReactElement => {
+const List = ({ type, cards }: Props): ReactElement => {
     return (
         <div className="word-list__container">
             <div

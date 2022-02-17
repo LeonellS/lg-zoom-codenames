@@ -5,12 +5,12 @@ import { useAppDispatch, useAppSelector } from '../../store/store'
 const NOTIFICATION_FADING_OUT_INTERVAL = 5000
 const NOTIFICATION_REMOVE_INTERVAL = 6000
 
-interface NotificationProps {
+interface Props {
     id: number
     children: string
 }
 
-const Notification = ({ id, children }: NotificationProps): ReactElement => {
+const Notification = ({ id, children }: Props): ReactElement => {
     const dispatch = useAppDispatch()
 
     const [fadingOut, setFadingOut] = useState(false)

@@ -3,11 +3,11 @@ import { JoinGameAction, stringifyAction } from '../../action/action'
 import { createNotification } from '../../store/notification'
 import { useAppDispatch } from '../../store/store'
 
-interface JoinGameFormProps {
+interface Props {
     ws: WebSocket | null
 }
 
-const JoinForm = ({ ws }: JoinGameFormProps): ReactElement => {
+const JoinForm = ({ ws }: Props): ReactElement => {
     const dispatch = useAppDispatch()
 
     const [code, setCode] = useState('')
