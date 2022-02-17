@@ -13,6 +13,9 @@ import Header from './common/Header'
 import Board from './game/Board'
 import Dialog from './game/Dialog'
 import Notification from './common/Notification'
+import Fullscreen from './game/Fullscreen'
+
+declare const WS_HOST_NAME: string
 
 const GameApp = (): ReactElement => {
     const dispatch = useDispatch()
@@ -25,7 +28,7 @@ const GameApp = (): ReactElement => {
 
     useEffect(() => {
         const wsConnection = new WebSocket(
-            'ws://127.0.0.1:80/screen-share-codenames/game/ws'
+            `ws://${WS_HOST_NAME}/screen-share-codenames/game/ws`
         )
 
         wsConnection.addEventListener('open', () => {
@@ -93,6 +96,8 @@ const GameApp = (): ReactElement => {
     return (
         <>
             <Header forGame={true} />
+
+            <Fullscreen />
 
             <div className="game__container">
                 <div className="game__mobile">

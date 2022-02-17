@@ -9,6 +9,8 @@ import Header from './common/Header'
 import Notification from './common/Notification'
 import { ClickCardPayload, SendWordListPayload } from '../action/payload'
 
+declare const WS_HOST_NAME: string
+
 const SpymasterApp = (): ReactElement => {
     const dispatch = useAppDispatch()
 
@@ -19,7 +21,7 @@ const SpymasterApp = (): ReactElement => {
 
     useEffect(() => {
         const wsConnection = new WebSocket(
-            'ws://127.0.0.1:80/screen-share-codenames/spymaster/ws'
+            `ws://${WS_HOST_NAME}/screen-share-codenames/spymaster/ws`
         )
 
         wsConnection.addEventListener('open', () => {

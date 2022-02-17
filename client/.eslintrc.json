@@ -27,5 +27,8 @@
         }
     },
     "ignorePatterns": ["/**/dist", "/**/*.config.*"],
-    "rules": {}
+    "rules": {},
+    "globals": {
+        "WS_HOST_NAME": "readonly"
+    }
 }

@@ -1,7 +1,7 @@
 # Client
-
 /client/node_modules
 /client/dist
+/client/.env
 
 # Server
 /server/target

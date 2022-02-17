@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -10,6 +11,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 
 import autoprefixer from 'autoprefixer'
 import PurgeCSS from '@fullhuman/postcss-purgecss'
+import webpack from 'webpack'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -67,6 +69,11 @@ const config = {
         new HtmlWebpackSkipAssetsPlugin(),
         new CopyWebpackPlugin({
             patterns: [{ from: 'asset', to: `public/asset` }],
+        }),
+        new webpack.DefinePlugin({
+            WS_HOST_NAME: JSON.stringify(
+                isProduction ? process.env.PRODUCTION_HOST_NAME : 'localhost'
+            ),
         }),
     ],
     module: {
