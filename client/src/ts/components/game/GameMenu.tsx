@@ -3,6 +3,7 @@ import { DialogType, showDialog } from '../../store/dialog'
 import { createNotification } from '../../store/notification'
 import { useAppDispatch } from '../../store/store'
 
+declare const WS_HOST_NAME: string
 interface Props {
     code: string
 }
@@ -25,7 +26,7 @@ const GameMenu = ({ code }: Props): ReactElement => {
     function handleCopyGameCode(): void {
         navigator.clipboard
             .writeText(
-                `Game code: ${code.toUpperCase()}\nJoin as spymaster at https://leonell.dev/screen-share-codenames/spymaster`
+                `Game code: ${code.toUpperCase()}\nJoin as spymaster at https://${WS_HOST_NAME}/screen-share-codenames/spymaster`
             )
             .then(() => {
                 dispatch(createNotification('Copied game code'))
