@@ -1,5 +1,6 @@
 import React, { ReactElement, useState } from 'react'
-import { JoinGameAction, stringifyAction } from '../../action/action'
+import { stringifyAction } from '../../action/action'
+import { JoinGamePayload } from '../../action/payload'
 import { createNotification } from '../../store/notification'
 import { useAppDispatch } from '../../store/store'
 
@@ -7,13 +8,13 @@ interface Props {
     ws: WebSocket | null
 }
 
-const JoinForm = ({ ws }: Props): ReactElement => {
+const JoinGameForm = ({ ws }: Props): ReactElement => {
     const dispatch = useAppDispatch()
 
     const [code, setCode] = useState('')
 
     function handleJoin(): void {
-        const payload: JoinGameAction = {
+        const payload: JoinGamePayload = {
             code: code.toUpperCase(),
         }
 
@@ -51,4 +52,4 @@ const JoinForm = ({ ws }: Props): ReactElement => {
     )
 }
 
-export default JoinForm
+export default JoinGameForm
