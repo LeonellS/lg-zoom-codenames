@@ -35,8 +35,6 @@ const SpymasterApp = (): ReactElement => {
         wsConnection.addEventListener('message', (e) => {
             const { action, payload }: Action = JSON.parse(e.data as string)
 
-            console.log(`action: ${action}`)
-
             switch (action) {
                 case 'join_success': {
                     setHasGame(true)
