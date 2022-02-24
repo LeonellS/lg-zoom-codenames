@@ -30,12 +30,12 @@ pub fn app(config: &mut web::ServiceConfig) {
 
 #[get("")]
 async fn index_view() -> io::Result<NamedFile> {
-    Ok(NamedFile::open("./views/index.html")?)
+    Ok(NamedFile::open("./views/screen-share-codenames/index.html")?)
 }
 
 #[get("/game")]
 async fn game_view() -> io::Result<NamedFile> {
-    Ok(NamedFile::open("./views/game.html")?)
+    Ok(NamedFile::open("./views/screen-share-codenames/game.html")?)
 }
 
 async fn game_ws(
@@ -48,7 +48,7 @@ async fn game_ws(
 
 #[get("/spymaster")]
 async fn spymaster_view() -> io::Result<NamedFile> {
-    Ok(NamedFile::open("./views/spymaster.html")?)
+    Ok(NamedFile::open("./views/screen-share-codenames/spymaster.html")?)
 }
 
 async fn spymaster_ws(
