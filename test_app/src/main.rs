@@ -1,6 +1,6 @@
 use actix::Actor;
 use actix_files::Files;
-use actix_web::middleware::normalize::TrailingSlash;
+use actix_web::middleware::TrailingSlash;
 use actix_web::middleware::{Logger, NormalizePath};
 use actix_web::{App, HttpServer};
 use env_logger::Env;
@@ -21,7 +21,7 @@ async fn main() -> io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .wrap(NormalizePath::new(TrailingSlash::Trim))
-            .data(server.clone())
+            .app_data(server.clone())
             .configure(screen_share_codenames_server::app)
             .service(Files::new("/public", "public"))
     };

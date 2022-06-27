@@ -11,7 +11,7 @@ use crate::server::Server;
 use crate::spymaster::Spymaster;
 use crate::{action, action::Action};
 use actix::{
-    fut, Actor, ActorContext, ActorFuture, Addr, AsyncContext, ContextFutureSpawner, Running,
+    fut, Actor, ActorContext, ActorFutureExt, Addr, AsyncContext, ContextFutureSpawner, Running,
     StreamHandler, WrapFuture,
 };
 use actix_web_actors::ws;

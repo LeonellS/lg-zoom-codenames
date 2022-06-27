@@ -1,12 +1,15 @@
 [package]
 name = "test_app"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-actix = "0.10.0"
-actix-web = "3.3.3"
-actix-files = "0.5.0"
+actix = "0.13.0"
+actix-web = { version = "4.1.0", features = ["rustls"] }
+actix-files = "0.6.1"
 log = "0.4.14"
 env_logger = "0.9.0"
 screen-share-codenames-server = { path = "../server" }
+dotenv = "0.15.0"
+rustls = "0.20.6"
+rustls-pemfile = "1.0.0"

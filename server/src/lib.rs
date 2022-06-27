@@ -10,8 +10,8 @@ use crate::server::Server;
 use crate::spymaster::Spymaster;
 use actix::Addr;
 use actix_files::NamedFile;
-use actix_web::middleware::normalize::TrailingSlash;
 use actix_web::middleware::NormalizePath;
+use actix_web::middleware::TrailingSlash;
 use actix_web::{get, web, HttpRequest, HttpResponse};
 use actix_web_actors::ws;
 use std::io;
@@ -30,7 +30,9 @@ pub fn app(config: &mut web::ServiceConfig) {
 
 #[get("")]
 async fn index_view() -> io::Result<NamedFile> {
-    Ok(NamedFile::open("./views/screen-share-codenames/index.html")?)
+    Ok(NamedFile::open(
+        "./views/screen-share-codenames/index.html",
+    )?)
 }
 
 #[get("/game")]
@@ -48,7 +50,9 @@ async fn game_ws(
 
 #[get("/spymaster")]
 async fn spymaster_view() -> io::Result<NamedFile> {
-    Ok(NamedFile::open("./views/screen-share-codenames/spymaster.html")?)
+    Ok(NamedFile::open(
+        "./views/screen-share-codenames/spymaster.html",
+    )?)
 }
 
 async fn spymaster_ws(
